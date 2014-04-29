@@ -7,9 +7,11 @@ I want to see a list of options
 So that I can continue on
 
 Acceptance Criteria:
-  * If the user selects 1, they see "How do you want to add?"
+  * If the user selects 1, they see "Who do you want to add?"
   * If the user selects 2, they see "What is the injury you want to add?"
   * If the user selects 3, they see "Who is injured?"
+  * If the user types in anything else, they should see "<input> is an invalid selection" and the menu should be printed out again
+
 Usage:
 
     > ./living_will_to_die
