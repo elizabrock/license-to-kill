@@ -39,7 +39,28 @@ EOS
       shell_output.should include_in_order(menu_text, "4", menu_text)
     end
     it "should include an appropriate error message" do
-      shell_output.should include("4 is not a valid selection")
+      shell_output.should include("'4' is not a valid selection")
+    end
+  end
+  context "if the user types in no input" do
+    let(:shell_output){ run_ltk_with_input("") }
+    it "should print the menu again" do
+      shell_output.should include_in_order(menu_text, menu_text)
+    end
+    it "should include an appropriate error message" do
+      shell_output.should include("'' is not a valid selection")
+    end
+  end
+  context "if the user types in incorrect input, it should allow correct input" do
+    let(:shell_output){ run_ltk_with_input("4", "3") }
+    it "should include the appropriate menu" do
+      shell_output.should include("Who is injured?")
+    end
+  end
+  context "if the user types in incorrect input multiple times, it should allow correct input" do
+    let(:shell_output){ run_ltk_with_input("4","", "1") }
+    it "should include the appropriate menu" do
+      shell_output.should include("Who do you want to add?")
     end
   end
 end

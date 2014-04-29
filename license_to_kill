@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+
+def menu
+<<EOS
+What do you want to do?
+1. Add Person
+2. Add Injury
+3. Evaluate Injured Person
+EOS
+end
+
+def get_menu_selection
+  puts menu
+  input = gets
+  return unless input
+  input.chomp!
+  if input == "1"
+    puts "Who do you want to add?"
+  elsif input == "2"
+    puts "What is the injury you want to add?"
+  elsif input == "3"
+    puts "Who is injured?"
+  else
+    puts "'#{input}' is not a valid selection"
+    get_menu_selection
+  end
+end
+
+get_menu_selection

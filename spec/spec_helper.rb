@@ -14,8 +14,9 @@ end
 
 RSpec::Matchers.define :include_in_order do |*expected|
   match do |actual|
-    regexp_string = expected.join(".*").gsub("?","\\?")
     input = actual.delete("\n")
-    /#{regexp_string}/.match(input).should_not be_nil
+    regexp_string = expected.join(".*").gsub("?","\\?").gsub("\n",".*")
+    result = /#{regexp_string}/.match(input)
+    result.should be
   end
 end
