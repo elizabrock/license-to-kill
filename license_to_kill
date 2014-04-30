@@ -5,6 +5,7 @@ $LOAD_PATH << "models"
 
 require 'environment'
 Environment.environment = "test"
+$stderr = $stdout
 
 require 'injury'
 
@@ -20,8 +21,13 @@ end
 def add_injury
   puts "What is the injury you want to add?"
   injury_name = gets.chomp
-  Injury.new(injury_name).save
-  puts "#{injury_name} has been added."
+  injury = Injury.new(injury_name)
+  if injury.save
+    puts "#{injury_name} has been added."
+  else
+    puts injury.errors
+    add_injury
+  end
 end
 
 def get_menu_selection
