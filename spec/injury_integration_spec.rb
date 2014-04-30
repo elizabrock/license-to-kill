@@ -6,9 +6,10 @@ describe "Adding an injury" do
     injury.save
   end
   context "adding a unique injury" do
-    let(:output){ run_ltk_with_input("2", "Disembowelment") }
+    let!(:output){ run_ltk_with_input("2", "Disembowelment") }
     it "should print a confirmation message" do
       output.should include("Disembowelment has been added.")
+      Injury.count.should == 2
     end
     it "should insert a new injury" do
       Injury.count.should == 2

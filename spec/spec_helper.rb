@@ -1,4 +1,11 @@
 require 'rspec/expectations'
+$LOAD_PATH << "lib"
+$LOAD_PATH << "models"
+
+require 'environment'
+require 'injury'
+
+Environment.environment = "test"
 
 def run_ltk_with_input(*inputs)
   shell_output = ""
@@ -10,6 +17,12 @@ def run_ltk_with_input(*inputs)
     shell_output << pipe.read
   end
   shell_output
+end
+
+RSpec.configure do |config|
+  config.after(:each) do
+    Environment.database_connection.execute("DELETE FROM injuries;")
+  end
 end
 
 RSpec::Matchers.define :include_in_order do |*expected|
