@@ -1,6 +1,26 @@
 require_relative 'spec_helper'
 
 describe Injury do
+  context ".all" do
+    context "with no injuries in the database" do
+      it "should return an empty array" do
+        Injury.all.should == []
+      end
+    end
+    context "with multiple injuries in the database" do
+      before do
+        Injury.new("Foo").save
+        Injury.new("Bar").save
+        Injury.new("Baz").save
+        Injury.new("Grille").save
+      end
+      it "should return all of the injuries" do
+        names = Injury.all.map(&:name)
+        names.should == ["Foo", "Bar", "Baz", "Grille"]
+      end
+    end
+  end
+
   context ".count" do
     context "with no injuries in the database" do
       it "should return 0" do
