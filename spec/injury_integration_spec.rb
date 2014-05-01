@@ -42,12 +42,16 @@ describe "Adding an injury" do
   end
   context "entering an invalid looking injury name" do
     context "with SQL injection" do
-      let(:output){ run_ltk_with_input("2", "phalangectomy'); Insert into injuries ('425") }
+      let(:input){ "phalangectomy'), ('425" }
+      let!(:output){ run_ltk_with_input("2", input) }
       it "should create the injury without evaluating the SQL" do
-        Injury.last.name.should == "phalangectomy'); Insert into injuries ('425"
+        Injury.last.name.should == input
       end
-      it "shouldn't create the duplicate injury" do
+      it "shouldn't create an extra injury" do
         Injury.count.should == 2
+      end
+      it "should print a success message at the end" do
+        output.should include("#{input} has been added")
       end
     end
     context "without alphabet characters" do
