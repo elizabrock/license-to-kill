@@ -30,8 +30,8 @@ describe "Adding an injury" do
     it "shouldn't save the duplicate" do
       Injury.count.should == 1
     end
-    context "trying again" do
-      let(:output){ run_ltk_with_input("2", "Decapitation", "Leprosy") }
+    context "and trying again" do
+      let!(:output){ run_ltk_with_input("2", "Decapitation", "Leprosy") }
       it "should save a unique item" do
         Injury.last.name.should == "Leprosy"
       end
