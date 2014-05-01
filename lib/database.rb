@@ -13,8 +13,8 @@ class Database < SQLite3::Database
     self.execute("CREATE TABLE injuries (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(50))")
   end
 
-  def execute(statement)
+  def execute(statement, bind_vars = [])
     Environment.logger.info("Executing: " + statement)
-    super(statement)
+    super(statement, bind_vars)
   end
 end

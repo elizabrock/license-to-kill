@@ -19,8 +19,8 @@ class Injury
   end
 
   def self.find_by_name(name)
-    statement = "Select * from injuries where name = \"#{name}\";"
-    execute_and_instantiate(statement)[0]
+    statement = "Select * from injuries where name = ?;"
+    execute_and_instantiate(statement, name)[0]
   end
 
   def self.last
@@ -33,16 +33,16 @@ class Injury
       @errors << "#{self.name} already exists."
       false
     else
-      statement = "Insert into injuries (name) values ('#{name}');"
-      Environment.database_connection.execute(statement)
+      statement = "Insert into injuries (name) values (?);"
+      Environment.database_connection.execute(statement, name)
       true
     end
   end
 
   private
 
-  def self.execute_and_instantiate(statement)
-    rows = Environment.database_connection.execute(statement)
+  def self.execute_and_instantiate(statement, bind_vars = [])
+    rows = Environment.database_connection.execute(statement, bind_vars)
     results = []
     rows.each do |row|
       results << Injury.new(row["name"])
