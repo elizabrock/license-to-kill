@@ -8,6 +8,7 @@ Environment.environment = ENV["ENVIRONMENT"] || "production"
 $stderr = $stdout
 
 require 'injury'
+require 'person'
 
 def menu
 <<EOS
@@ -16,6 +17,20 @@ What do you want to do?
 2. Add Injury
 3. Evaluate Injured Person
 EOS
+end
+
+def add_person
+  puts "Who do you want to add?"
+  person_name = gets
+  return unless person_name
+  person_name.chomp!
+  person = Person.new(person_name)
+  if person.save
+    puts "#{person.name} has been added."
+  else
+    puts person.errors
+    add_person
+  end
 end
 
 def add_injury
@@ -40,7 +55,7 @@ def get_menu_selection
   return unless input
   input.chomp!
   if input == "1"
-    puts "Who do you want to add?"
+    add_person
   elsif input == "2"
     add_injury
   elsif input == "3"
