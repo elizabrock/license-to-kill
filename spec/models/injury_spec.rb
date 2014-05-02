@@ -8,15 +8,22 @@ describe Injury do
       end
     end
     context "with multiple injuries in the database" do
+      let(:foo){ Injury.new("Foo") }
+      let(:bar){ Injury.new("Bar") }
+      let(:baz){ Injury.new("Baz") }
+      let(:grille){ Injury.new("Grille") }
       before do
-        Injury.new("Foo").save
-        Injury.new("Bar").save
-        Injury.new("Baz").save
-        Injury.new("Grille").save
+        foo.save
+        bar.save
+        baz.save
+        grille.save
       end
-      it "should return all of the injuries" do
-        names = Injury.all.map(&:name)
-        names.should == ["Foo", "Bar", "Baz", "Grille"]
+      it "should return all of the injuries with their names and ids" do
+        injury_attrs = Injury.all.map{ |injury| [injury.name,injury.id] }
+        injury_attrs.should == [["Foo", foo.id],
+                                ["Bar", bar.id],
+                                ["Baz", baz.id],
+                                ["Grille", grille.id]]
       end
     end
   end
@@ -47,14 +54,18 @@ describe Injury do
       end
     end
     context "with injury by that name in the database" do
+      let(:foo){ Injury.new("Foo") }
       before do
-        Injury.new("Foo").save
+        foo.save
         Injury.new("Bar").save
         Injury.new("Baz").save
         Injury.new("Grille").save
       end
       it "should return the injury with that name" do
         Injury.find_by_name("Foo").name.should == "Foo"
+      end
+      it "should populate the id" do
+        Injury.find_by_name("Foo").id.should == foo.id
       end
     end
   end
@@ -66,14 +77,18 @@ describe Injury do
       end
     end
     context "with multiple injuries in the database" do
+      let(:grille){ Injury.new("Grille") }
       before do
         Injury.new("Foo").save
         Injury.new("Bar").save
         Injury.new("Baz").save
-        Injury.new("Grille").save
+        grille.save
       end
       it "should return the last one inserted" do
         Injury.last.name.should == "Grille"
+      end
+      it "should return the last one inserted with id populated" do
+        Injury.last.id.should == grille.id
       end
     end
   end
@@ -85,8 +100,37 @@ describe Injury do
     end
   end
 
+  context "#create" do
+    let(:result){ Environment.database_connection.execute("Select * from injuries") }
+    let(:injury){ Injury.create("foo") }
+    context "with a valid injury" do
+      before do
+        Injury.any_instance.stub(:valid?){ true }
+        injury
+      end
+      it "should record the new id" do
+        result[0]["id"].should == injury.id
+      end
+      it "should only save one row to the database" do
+        result.count.should == 1
+      end
+      it "should actually save it to the database" do
+        result[0]["name"].should == "foo"
+      end
+    end
+    context "with an invalid injury" do
+      before do
+        Injury.any_instance.stub(:valid?){ false }
+        injury
+      end
+      it "should not save a new injury" do
+        result.count.should == 0
+      end
+    end
+  end
+
   context "#save" do
-    let(:result){ Environment.database_connection.execute("Select name from injuries") }
+    let(:result){ Environment.database_connection.execute("Select * from injuries") }
     let(:injury){ Injury.new("foo") }
     context "with a valid injury" do
       before do
@@ -95,6 +139,10 @@ describe Injury do
       it "should only save one row to the database" do
         injury.save
         result.count.should == 1
+      end
+      it "should record the new id" do
+        injury.save
+        injury.id.should == result[0]["id"]
       end
       it "should actually save it to the database" do
         injury.save

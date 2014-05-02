@@ -27,6 +27,11 @@ class Person
     execute_and_instantiate(statement)[0]
   end
 
+  def id
+    # Temporary, so that we can wrap up the join model during class time:
+    5
+  end
+
   def save
     if self.valid?
       statement = "Insert into people (name) values (?);"

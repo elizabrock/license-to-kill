@@ -4,6 +4,7 @@ $LOAD_PATH << "models"
 
 require 'environment'
 require 'injury'
+require 'injury_outcome'
 require 'person'
 
 Environment.environment = "test"
@@ -23,6 +24,7 @@ end
 RSpec.configure do |config|
   config.after(:each) do
     Environment.database_connection.execute("DELETE FROM injuries;")
+    Environment.database_connection.execute("DELETE FROM injury_outcomes;")
     Environment.database_connection.execute("DELETE FROM people;")
   end
 end

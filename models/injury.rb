@@ -1,5 +1,6 @@
 class Injury
   attr_reader :errors
+  attr_reader :id
   attr_accessor :name
 
   def initialize(name)
@@ -17,6 +18,12 @@ class Injury
     result[0][0]
   end
 
+  def self.create(name)
+    injury = Injury.new(name)
+    injury.save
+    injury
+  end
+
   def self.find_by_name(name)
     statement = "Select * from injuries where name = ?;"
     execute_and_instantiate(statement, name)[0]
@@ -31,6 +38,7 @@ class Injury
     if self.valid?
       statement = "Insert into injuries (name) values (?);"
       Environment.database_connection.execute(statement, name)
+      @id = Environment.database_connection.execute("SELECT last_insert_rowid();")[0][0]
       true
     else
       false
@@ -54,7 +62,9 @@ class Injury
     rows = Environment.database_connection.execute(statement, bind_vars)
     results = []
     rows.each do |row|
-      results << Injury.new(row["name"])
+      injury = Injury.new(row["name"])
+      injury.instance_variable_set(:@id, row["id"])
+      results << injury
     end
     results
   end
