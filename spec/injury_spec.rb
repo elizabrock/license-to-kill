@@ -87,10 +87,10 @@ describe Injury do
 
   context "#save" do
     let(:result){ Environment.database_connection.execute("Select name from injuries") }
-    context "with a unique name" do
-      let(:injury){ Injury.new("impalement, 1/2 - 2 inches diameter") }
-      it "should return true" do
-        injury.save.should be_true
+    let(:injury){ Injury.new("foo") }
+    context "with a valid injury" do
+      before do
+        injury.stub(:valid?){ true }
       end
       it "should only save one row to the database" do
         injury.save
@@ -98,20 +98,43 @@ describe Injury do
       end
       it "should actually save it to the database" do
         injury.save
-        result[0]["name"].should == "impalement, 1/2 - 2 inches diameter"
+        result[0]["name"].should == "foo"
       end
     end
-    context "with a invalid name" do
-      let(:injury){ Injury.new("420") }
-      it "should return false" do
-        injury.save.should be_false
+    context "with an invalid injury" do
+      before do
+        injury.stub(:valid?){ false }
       end
       it "should not save a new injury" do
         injury.save
         result.count.should == 0
       end
+    end
+  end
+
+  context "#valid?" do
+    let(:result){ Environment.database_connection.execute("Select name from injuries") }
+    context "after fixing the errors" do
+      let(:injury){ Injury.new("123") }
+      it "should return true" do
+        injury.valid?.should be_false
+        injury.name = "Bob"
+        injury.valid?.should be_true
+      end
+    end
+    context "with a unique name" do
+      let(:injury){ Injury.new("impalement, 1/2 - 2 inches diameter") }
+      it "should return true" do
+        injury.valid?.should be_true
+      end
+    end
+    context "with a invalid name" do
+      let(:injury){ Injury.new("420") }
+      it "should return false" do
+        injury.valid?.should be_false
+      end
       it "should save the error messages" do
-        injury.save
+        injury.valid?
         injury.errors.first.should == "'420' is not a valid injury name, as it does not include any letters."
       end
     end
@@ -121,14 +144,10 @@ describe Injury do
         Injury.new("impalement, 1/2 inch diameter or smaller").save
       end
       it "should return false" do
-        injury.save.should be_false
-      end
-      it "should not save a new injury" do
-        injury.save
-        result.count.should == 1
+        injury.valid?.should be_false
       end
       it "should save the error messages" do
-        injury.save
+        injury.valid?
         injury.errors.first.should == "impalement, 1/2 inch diameter or smaller already exists."
       end
     end

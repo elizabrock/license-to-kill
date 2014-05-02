@@ -1,10 +1,9 @@
 class Injury
   attr_reader :errors
-  attr_reader :name
+  attr_accessor :name
 
   def initialize(name)
     @name = name
-    @errors = []
   end
 
   def self.all
@@ -29,17 +28,24 @@ class Injury
   end
 
   def save
-    if !name.match /[a-zA-Z]/
-      @errors << "'#{self.name}' is not a valid injury name, as it does not include any letters."
-      false
-    elsif Injury.find_by_name(self.name)
-      @errors << "#{self.name} already exists."
-      false
-    else
+    if self.valid?
       statement = "Insert into injuries (name) values (?);"
       Environment.database_connection.execute(statement, name)
       true
+    else
+      false
     end
+  end
+
+  def valid?
+    @errors = []
+    if !name.match /[a-zA-Z]/
+      @errors << "'#{self.name}' is not a valid injury name, as it does not include any letters."
+    end
+    if Injury.find_by_name(self.name)
+      @errors << "#{self.name} already exists."
+    end
+    @errors.empty?
   end
 
   private
