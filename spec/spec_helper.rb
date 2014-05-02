@@ -9,7 +9,7 @@ Environment.environment = "test"
 
 def run_ltk_with_input(*inputs)
   shell_output = ""
-  IO.popen('./license_to_kill', 'r+') do |pipe|
+  IO.popen('ENVIRONMENT=test ./license_to_kill', 'r+') do |pipe|
     inputs.each do |input|
       pipe.puts input
     end
