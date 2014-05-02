@@ -101,6 +101,20 @@ describe Injury do
         result[0]["name"].should == "impalement, 1/2 - 2 inches diameter"
       end
     end
+    context "with a invalid name" do
+      let(:injury){ Injury.new("420") }
+      it "should return false" do
+        injury.save.should be_false
+      end
+      it "should not save a new injury" do
+        injury.save
+        result.count.should == 0
+      end
+      it "should save the error messages" do
+        injury.save
+        injury.errors.first.should == "'420' is not a valid injury name, as it does not include any letters."
+      end
+    end
     context "with a duplicate name" do
       let(:injury){ Injury.new("impalement, 1/2 inch diameter or smaller") }
       before do

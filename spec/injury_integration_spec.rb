@@ -57,15 +57,12 @@ describe "Adding an injury" do
     context "without alphabet characters" do
       let(:output){ run_ltk_with_input("2", "4*25") }
       it "should not save the injury" do
-        pending
         Injury.count.should == 1
       end
       it "should print an error message" do
-        pending
-        output.should include("'4*25' is not a valid injury name, as it does not include any letters'")
+        output.should include("'4*25' is not a valid injury name, as it does not include any letters.")
       end
       it "should let them try again" do
-        pending
         menu_text = "What is the injury you want to add?"
         output.should include_in_order(menu_text, "not a valid", menu_text)
       end

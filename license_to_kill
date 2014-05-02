@@ -20,7 +20,9 @@ end
 
 def add_injury
   puts "What is the injury you want to add?"
-  injury_name = gets.chomp
+  injury_name = gets
+  return unless injury_name
+  injury_name.chomp!
   injury = Injury.new(injury_name)
   if injury.save
     puts "#{injury_name} has been added."
@@ -30,6 +32,8 @@ def add_injury
   end
 end
 
+# REPL
+# Read - Eval - Print Loop
 def get_menu_selection
   puts menu
   input = gets

@@ -29,7 +29,10 @@ class Injury
   end
 
   def save
-    if Injury.find_by_name(self.name)
+    if !name.match /[a-zA-Z]/
+      @errors << "'#{self.name}' is not a valid injury name, as it does not include any letters."
+      false
+    elsif Injury.find_by_name(self.name)
       @errors << "#{self.name} already exists."
       false
     else
