@@ -8,15 +8,16 @@ describe Person do
       end
     end
     context "with multiple people in the database" do
-      before do
-        Person.new("Foo").save
-        Person.new("Bar").save
-        Person.new("Baz").save
-        Person.new("Grille").save
-      end
+      let!(:foo){ Person.create("Foo") }
+      let!(:bar){ Person.create("Bar") }
+      let!(:baz){ Person.create("Baz") }
+      let!(:grille){ Person.create("Grille") }
       it "should return all of the people" do
-        names = Person.all.map(&:name)
-        names.should == ["Foo", "Bar", "Baz", "Grille"]
+        person_attrs = Person.all.map{ |person| [person.name,person.id] }
+        person_attrs.should == [["Foo", foo.id],
+                                ["Bar", bar.id],
+                                ["Baz", baz.id],
+                                ["Grille", grille.id]]
       end
     end
   end
@@ -47,14 +48,18 @@ describe Person do
       end
     end
     context "with person by that name in the database" do
+      let(:foo){ Person.create("Foo") }
       before do
-        Person.new("Foo").save
+        foo
         Person.new("Bar").save
         Person.new("Baz").save
         Person.new("Grille").save
       end
       it "should return the person with that name" do
-        Person.find_by_name("Foo").name.should == "Foo"
+        Person.find_by_name("Foo").id.should == foo.id
+      end
+      it "should return the person with that name" do
+        Person.find_by_name("Foo").name.should == foo.name
       end
     end
   end
@@ -85,8 +90,37 @@ describe Person do
     end
   end
 
+  context "#create" do
+    let(:result){ Environment.database_connection.execute("Select * from people") }
+    let(:person){ Person.create("foo") }
+    context "with a valid injury" do
+      before do
+        Person.any_instance.stub(:valid?){ true }
+        person
+      end
+      it "should record the new id" do
+        person.id.should == result[0]["id"]
+      end
+      it "should only save one row to the database" do
+        result.count.should == 1
+      end
+      it "should actually save it to the database" do
+        result[0]["name"].should == "foo"
+      end
+    end
+    context "with an invalid injury" do
+      before do
+        Person.any_instance.stub(:valid?){ false }
+        person
+      end
+      it "should not save a new injury" do
+        result.count.should == 0
+      end
+    end
+  end
+
   context "#save" do
-    let(:result){ Environment.database_connection.execute("Select name from people") }
+    let(:result){ Environment.database_connection.execute("Select * from people") }
     let(:person){ Person.new("foo") }
     context "with a valid person" do
       before do
@@ -99,6 +133,10 @@ describe Person do
       it "should actually save it to the database" do
         person.save
         result[0]["name"].should == "foo"
+      end
+      it "should record the new id" do
+        person.save
+        person.id.should == result[0]["id"]
       end
     end
     context "with an invalid person" do

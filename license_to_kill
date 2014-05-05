@@ -8,6 +8,7 @@ Environment.environment = ENV["ENVIRONMENT"] || "production"
 $stderr = $stdout
 
 require 'injury'
+require 'injury_outcome'
 require 'person'
 
 def menu
@@ -19,6 +20,22 @@ What do you want to do?
 EOS
 end
 
+def record_desired_outcomes_for(person)
+  Injury.all.each do |injury|
+    puts "What if #{injury.name}?"
+    puts "1. Put me out of my misery."
+    puts "2. Just a flesh wound. Carry on."
+    response = gets.chomp!
+    kill_them = (response == "1")
+    if kill_them
+      puts "We'll kill you if you suffer from #{injury.name}"
+    else
+      puts "We'll let you linger on if you suffer from #{injury.name}"
+    end
+    InjuryOutcome.create_for(person, injury, kill_them)
+  end
+end
+
 def add_person
   puts "Who do you want to add?"
   person_name = gets
@@ -27,6 +44,7 @@ def add_person
   person = Person.new(person_name)
   if person.save
     puts "#{person.name} has been added."
+    record_desired_outcomes_for(person)
   else
     puts person.errors
     add_person

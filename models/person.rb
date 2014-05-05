@@ -1,5 +1,6 @@
 class Person
   attr_reader :errors
+  attr_reader :id
   attr_accessor :name
 
   def initialize(name)
@@ -17,6 +18,12 @@ class Person
     result[0][0]
   end
 
+  def self.create(name)
+    person = Person.new(name)
+    person.save
+    person
+  end
+
   def self.find_by_name(name)
     statement = "Select * from people where name = ?;"
     execute_and_instantiate(statement, name)[0]
@@ -27,15 +34,11 @@ class Person
     execute_and_instantiate(statement)[0]
   end
 
-  def id
-    # Temporary, so that we can wrap up the join model during class time:
-    5
-  end
-
   def save
     if self.valid?
       statement = "Insert into people (name) values (?);"
       Environment.database_connection.execute(statement, name)
+      @id = Environment.database_connection.execute("SELECT last_insert_rowid();")[0][0]
       true
     else
       false
@@ -59,7 +62,9 @@ class Person
     rows = Environment.database_connection.execute(statement, bind_vars)
     results = []
     rows.each do |row|
-      results << Person.new(row["name"])
+      person = Person.new(row["name"])
+      person.instance_variable_set(:@id, row["id"])
+      results << person
     end
     results
   end
