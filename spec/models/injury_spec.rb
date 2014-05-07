@@ -1,6 +1,45 @@
 require_relative '../spec_helper'
 
 describe Injury do
+  context "editing an injury" do
+    let(:original_injury){ Injury.create("foo") }
+    let!(:original_id){ original_injury.id }
+    context "valid update" do
+      before do
+        original_injury.name = "bar"
+        original_injury.save
+      end
+      let(:updated_injury){ Injury.find_by_name("bar") }
+      it "updated injury should not be nil" do
+        updated_injury.should_not be_nil
+      end
+      it "updated injury should retain previous id" do
+        updated_injury.id.should == original_id
+      end
+      it "total number of Injurys should remain constant" do
+        Injury.count.should == 1
+      end
+    end
+    context "invalid update" do
+      let(:duplicate_injury){ Injury.create("bar") }
+      before do
+        original_injury
+        duplicate_injury.name = "foo"
+        duplicate_injury.save
+      end
+      it "should not allow duplicate injury change to existing name" do
+        duplicate_injury.save.should == false
+      end
+      it "should raise error" do
+        duplicate_injury.errors.first.should == "foo already exists."
+      end
+      it "" do
+        Injury.count.should == 2
+      end
+    end
+  end
+
+
   context ".all" do
     context "with no injuries in the database" do
       it "should return an empty array" do

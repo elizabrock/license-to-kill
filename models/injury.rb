@@ -36,9 +36,14 @@ class Injury
 
   def save
     if self.valid?
-      statement = "Insert into injuries (name) values (?);"
-      Environment.database_connection.execute(statement, name)
-      @id = Environment.database_connection.execute("SELECT last_insert_rowid();")[0][0]
+      if self.id
+        statement = "Update injuries set name = ? where id = ?;"
+        Environment.database_connection.execute(statement,[name, self.id])
+      else
+        statement = "Insert into injuries (name) values (?);"
+        Environment.database_connection.execute(statement, name)
+        @id = Environment.database_connection.execute("SELECT last_insert_rowid();")[0][0]
+      end
       true
     else
       false
