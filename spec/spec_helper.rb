@@ -20,9 +20,7 @@ end
 
 RSpec.configure do |config|
   config.after(:each) do
-    Environment.database_connection.execute("DELETE FROM injuries;")
-    Environment.database_connection.execute("DELETE FROM injury_outcomes;")
-    Environment.database_connection.execute("DELETE FROM people;")
+    Person.destroy_all
   end
 end
 

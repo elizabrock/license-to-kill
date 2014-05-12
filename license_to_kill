@@ -37,7 +37,7 @@ def add_person
   person_name = gets
   return unless person_name
   person_name.chomp!
-  person = Person.new(person_name)
+  person = Person.new(name: person_name)
   if person.save
     puts "#{person.name} has been added."
     record_desired_outcomes_for(person)

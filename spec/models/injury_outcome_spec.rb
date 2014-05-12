@@ -3,8 +3,8 @@ require_relative '../spec_helper'
 describe InjuryOutcome do
   context "#create_for" do
     let(:result){ Environment.database_connection.execute("Select * from injury_outcomes") }
-    let(:person){ Person.new("Bob") }
-    let(:injury){ Injury.new("Stubbed Toe") }
+    let(:person){ Person.new(name: "Bob") }
+    let(:injury){ Injury.new(name: "Stubbed Toe") }
     before do
       person.save
       injury.save
@@ -25,10 +25,10 @@ describe InjuryOutcome do
   end
 
   describe "#for" do
-    let(:person1){ Person.create("Bob") }
-    let(:person2){ Person.create("Julie") }
-    let(:injury1){ Injury.create("Stubbed Toe") }
-    let(:injury2){ Injury.create("Botched Suicide") }
+    let(:person1){ Person.create(name: "Bob") }
+    let(:person2){ Person.create(name: "Julie") }
+    let(:injury1){ Injury.create(name: "Stubbed Toe") }
+    let(:injury2){ Injury.create(name: "Botched Suicide") }
     before do
       InjuryOutcome.create_for(person1, injury2, false)
       InjuryOutcome.create_for(person2, injury1, true)
