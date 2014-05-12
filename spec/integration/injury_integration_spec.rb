@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe "Adding an injury" do
   before do
-    injury = Injury.new("Decapitation")
+    injury = Injury.new(name: "Decapitation")
     injury.save
   end
   context "adding a unique injury" do

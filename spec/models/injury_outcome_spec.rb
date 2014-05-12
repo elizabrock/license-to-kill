@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe InjuryOutcome do
   context "#create_for" do
-    let(:result){ Environment.database_connection.execute("Select * from injury_outcomes") }
+    let(:result){ Injury.connection.execute("Select * from injury_outcomes") }
     let(:person){ Person.new(name: "Bob") }
     let(:injury){ Injury.new(name: "Stubbed Toe") }
     before do

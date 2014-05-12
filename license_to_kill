@@ -52,7 +52,7 @@ def add_injury
   injury_name = gets
   return unless injury_name
   injury_name.chomp!
-  injury = Injury.new(injury_name)
+  injury = Injury.new(name: injury_name)
   if injury.save
     puts "#{injury_name} has been added."
   else
