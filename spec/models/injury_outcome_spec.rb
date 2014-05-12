@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe InjuryOutcome do
   context "#create_for" do
-    let(:result){ Injury.connection.execute("Select * from injury_outcomes") }
+    let(:result){ InjuryOutcome.connection.execute("Select * from injury_outcomes") }
     let(:person){ Person.new(name: "Bob") }
     let(:injury){ Injury.new(name: "Stubbed Toe") }
     before do
@@ -20,7 +20,7 @@ describe InjuryOutcome do
       result[0]["injury_id"].should == injury.id
     end
     it "should have the correct outcome" do
-      result[0]["kill"].should == 1
+      result[0]["kill"].should == 't'
     end
   end
 

@@ -21,6 +21,7 @@ end
 RSpec.configure do |config|
   config.after(:each) do
     Injury.destroy_all
+    InjuryOutcome.destroy_all
     Person.destroy_all
   end
 end

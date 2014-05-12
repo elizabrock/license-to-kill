@@ -1,15 +1,12 @@
 class InjuryOutcome < ActiveRecord::Base
   def self.create_for(person, injury, kill)
-    statement = "Insert into injury_outcomes (person_id, injury_id, kill) values (?, ?, ?);"
-    kill_int = kill ? 1 : 0
-    Environment.database_connection.execute(statement, [person.id, injury.id, kill_int])
+    InjuryOutcome.create(person_id: person.id, injury_id: injury.id, kill: kill)
   end
 
   def self.for(person, injury)
     return if person.nil? or injury.nil?
-    statement = "Select kill from injury_outcomes where person_id = ? and injury_id = ?"
-    result = Environment.database_connection.execute(statement, [person.id, injury.id])
-    return nil if result.empty?
-    ( result[0]["kill"] == 1 )
+    injury_outcome = InjuryOutcome.where(person_id: person.id, injury_id: injury.id).first
+    return nil unless injury_outcome
+    injury_outcome.kill?
   end
 end
