@@ -42,7 +42,7 @@ def add_person
     puts "#{person.name} has been added."
     record_desired_outcomes_for(person)
   else
-    puts person.errors
+    puts "'#{person.name}' " + person.errors[:name].join()
     add_person
   end
 end
@@ -56,7 +56,7 @@ def add_injury
   if injury.save
     puts "#{injury_name} has been added."
   else
-    puts injury.errors
+    puts "'#{injury.name}' " + injury.errors[:name].join
     add_injury
   end
 end

@@ -2,9 +2,9 @@ require_relative '../spec_helper'
 
 describe "Entering desired injury outcomes" do
   context "with valid input" do
-    let!(:decapitation){ Injury.create("Decapitation") }
-    let!(:marker_poisoning){ Injury.create("Systemic Marker Poisoning") }
-    let!(:gut_wound){ Injury.create("Gut Wound") }
+    let!(:decapitation){ Injury.create(name: "Decapitation") }
+    let!(:marker_poisoning){ Injury.create(name: "Systemic Marker Poisoning") }
+    let!(:gut_wound){ Injury.create(name: "Gut Wound") }
     let!(:output){ run_ltk_with_input("1", "Joe", "1", "1", "2") }
     let(:joe){ Person.find_by_name("Joe") }
     it "should prompt the user for each injury" do

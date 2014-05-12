@@ -21,7 +21,7 @@ describe "Adding an injury" do
   context "adding a duplicate injury" do
     let(:output){ run_ltk_with_input("2", "Decapitation") }
     it "should print an error message" do
-      output.should include("Decapitation already exists.")
+      output.should include("'Decapitation' already exists.")
     end
     it "should ask them to try again" do
       menu_text = "What is the injury you want to add?"
