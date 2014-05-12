@@ -7,10 +7,6 @@ require 'environment'
 Environment.environment = ENV["ENVIRONMENT"] || "production"
 $stderr = $stdout
 
-require 'injury'
-require 'injury_outcome'
-require 'person'
-
 def menu
 <<EOS
 What do you want to do?

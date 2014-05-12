@@ -1,4 +1,4 @@
-class InjuryOutcome
+class InjuryOutcome < ActiveRecord::Base
   def self.create_for(person, injury, kill)
     statement = "Insert into injury_outcomes (person_id, injury_id, kill) values (?, ?, ?);"
     kill_int = kill ? 1 : 0

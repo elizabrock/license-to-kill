@@ -1,4 +1,4 @@
-class Person
+class Person < ActiveRecord::Base
   attr_reader :errors
   attr_reader :id
   attr_accessor :name
