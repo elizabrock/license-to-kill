@@ -28,7 +28,7 @@ def record_desired_outcomes_for(person)
     else
       puts "We'll let you linger on if you suffer from #{injury.name}"
     end
-    InjuryOutcome.create_for(person, injury, kill_them)
+    person.injury_outcomes.create(injury: injury, kill: kill_them)
   end
 end
 
