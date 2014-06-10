@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe "Adding an injury" do
   before do
-    injury = Injury.new("Decapitation")
+    injury = Injury.new(name: "Decapitation")
     injury.save
   end
   context "adding a unique injury" do
@@ -21,7 +21,7 @@ describe "Adding an injury" do
   context "adding a duplicate injury" do
     let(:output){ run_ltk_with_input("2", "Decapitation") }
     it "should print an error message" do
-      output.should include("Decapitation already exists.")
+      output.should include("'Decapitation' already exists.")
     end
     it "should ask them to try again" do
       menu_text = "What is the injury you want to add?"

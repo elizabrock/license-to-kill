@@ -8,10 +8,10 @@ describe Person do
       end
     end
     context "with multiple people in the database" do
-      let!(:foo){ Person.create("Foo") }
-      let!(:bar){ Person.create("Bar") }
-      let!(:baz){ Person.create("Baz") }
-      let!(:grille){ Person.create("Grille") }
+      let!(:foo){ Person.create(name: "Foo") }
+      let!(:bar){ Person.create(name: "Bar") }
+      let!(:baz){ Person.create(name: "Baz") }
+      let!(:grille){ Person.create(name: "Grille") }
       it "should return all of the people" do
         person_attrs = Person.all.map{ |person| [person.name,person.id] }
         person_attrs.should == [["Foo", foo.id],
@@ -30,10 +30,10 @@ describe Person do
     end
     context "with multiple people in the database" do
       before do
-        Person.new("Foo").save
-        Person.new("Bar").save
-        Person.new("Baz").save
-        Person.new("Grille").save
+        Person.new(name: "Foo").save
+        Person.new(name: "Bar").save
+        Person.new(name: "Baz").save
+        Person.new(name: "Grille").save
       end
       it "should return the correct count" do
         Person.count.should == 4
@@ -48,12 +48,12 @@ describe Person do
       end
     end
     context "with person by that name in the database" do
-      let(:foo){ Person.create("Foo") }
+      let(:foo){ Person.create(name: "Foo") }
       before do
         foo
-        Person.new("Bar").save
-        Person.new("Baz").save
-        Person.new("Grille").save
+        Person.new(name: "Bar").save
+        Person.new(name: "Baz").save
+        Person.new(name: "Grille").save
       end
       it "should return the person with that name" do
         Person.find_by_name("Foo").id.should == foo.id
@@ -72,10 +72,10 @@ describe Person do
     end
     context "with multiple people in the database" do
       before do
-        Person.new("Foo").save
-        Person.new("Bar").save
-        Person.new("Baz").save
-        Person.new("Grille").save
+        Person.new(name: "Foo").save
+        Person.new(name: "Bar").save
+        Person.new(name: "Baz").save
+        Person.new(name: "Grille").save
       end
       it "should return the last one inserted" do
         Person.last.name.should == "Grille"
@@ -84,15 +84,15 @@ describe Person do
   end
 
   context "#new" do
-    let(:person){ Person.new("Bob") }
+    let(:person){ Person.new(name: "Bob") }
     it "should store the name" do
       person.name.should == "Bob"
     end
   end
 
   context "#create" do
-    let(:result){ Environment.database_connection.execute("Select * from people") }
-    let(:person){ Person.create("foo") }
+    let(:result){ Person.connection.execute("Select * from people") }
+    let(:person){ Person.create(name: "foo") }
     context "with a valid injury" do
       before do
         Person.any_instance.stub(:valid?){ true }
@@ -120,8 +120,8 @@ describe Person do
   end
 
   context "#save" do
-    let(:result){ Environment.database_connection.execute("Select * from people") }
-    let(:person){ Person.new("foo") }
+    let(:result){ Person.connection.execute("Select * from people") }
+    let(:person){ Person.new(name: "foo") }
     context "with a valid person" do
       before do
         person.stub(:valid?){ true }
@@ -151,9 +151,9 @@ describe Person do
   end
 
   context "#valid?" do
-    let(:result){ Environment.database_connection.execute("Select name from people") }
+    let(:result){ Person.connection.execute("Select name from people") }
     context "after fixing the errors" do
-      let(:person){ Person.new("123") }
+      let(:person){ Person.new(name: "123") }
       it "should return true" do
         person.valid?.should be_false
         person.name = "Bob"
@@ -161,33 +161,33 @@ describe Person do
       end
     end
     context "with a unique name" do
-      let(:person){ Person.new("Joe") }
+      let(:person){ Person.new(name: "Joe") }
       it "should return true" do
         person.valid?.should be_true
       end
     end
     context "with a invalid name" do
-      let(:person){ Person.new("420") }
+      let(:person){ Person.new(name: "420") }
       it "should return false" do
         person.valid?.should be_false
       end
       it "should save the error messages" do
         person.valid?
-        person.errors.first.should == "'420' is not a valid person name, as it does not include any letters."
+        person.errors[:name].first.should == "is not a valid person name, as it does not include any letters."
       end
     end
     context "with a duplicate name" do
       let(:name){ "Susan" }
-      let(:person){ Person.new(name) }
+      let(:person){ Person.new(name: name) }
       before do
-        Person.new(name).save
+        Person.new(name: name).save
       end
       it "should return false" do
         person.valid?.should be_false
       end
       it "should save the error messages" do
         person.valid?
-        person.errors.first.should == "#{name} already exists."
+        person.errors[:name].first.should == "already exists."
       end
     end
   end

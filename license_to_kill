@@ -7,10 +7,6 @@ require 'environment'
 Environment.environment = ENV["ENVIRONMENT"] || "production"
 $stderr = $stdout
 
-require 'injury'
-require 'injury_outcome'
-require 'person'
-
 def menu
 <<EOS
 What do you want to do?
@@ -32,7 +28,7 @@ def record_desired_outcomes_for(person)
     else
       puts "We'll let you linger on if you suffer from #{injury.name}"
     end
-    InjuryOutcome.create_for(person, injury, kill_them)
+    person.injury_outcomes.create(injury: injury, kill: kill_them)
   end
 end
 
@@ -41,12 +37,12 @@ def add_person
   person_name = gets
   return unless person_name
   person_name.chomp!
-  person = Person.new(person_name)
+  person = Person.new(name: person_name)
   if person.save
     puts "#{person.name} has been added."
     record_desired_outcomes_for(person)
   else
-    puts person.errors
+    puts "'#{person.name}' " + person.errors[:name].join()
     add_person
   end
 end
@@ -56,11 +52,11 @@ def add_injury
   injury_name = gets
   return unless injury_name
   injury_name.chomp!
-  injury = Injury.new(injury_name)
+  injury = Injury.new(name: injury_name)
   if injury.save
     puts "#{injury_name} has been added."
   else
-    puts injury.errors
+    puts "'#{injury.name}' " + injury.errors[:name].join
     add_injury
   end
 end

@@ -2,9 +2,9 @@ require_relative '../spec_helper'
 
 describe "Entering desired injury outcomes" do
   context "with valid input" do
-    let!(:decapitation){ Injury.create("Decapitation") }
-    let!(:marker_poisoning){ Injury.create("Systemic Marker Poisoning") }
-    let!(:gut_wound){ Injury.create("Gut Wound") }
+    let!(:decapitation){ Injury.create(name: "Decapitation") }
+    let!(:marker_poisoning){ Injury.create(name: "Systemic Marker Poisoning") }
+    let!(:gut_wound){ Injury.create(name: "Gut Wound") }
     let!(:output){ run_ltk_with_input("1", "Joe", "1", "1", "2") }
     let(:joe){ Person.find_by_name("Joe") }
     it "should prompt the user for each injury" do
@@ -32,9 +32,11 @@ describe "Entering desired injury outcomes" do
                                      "We'll let you linger on if you suffer from Gut Wound",
                                     )
     end
-    it { InjuryOutcome.for(joe, decapitation).should be_true }
-    it { InjuryOutcome.for(joe, marker_poisoning).should be_true }
-    it { InjuryOutcome.for(joe, gut_wound).should be_false }
+    # For reference:
+    # it { joe.injury_outcomes.where(injury: decapitation).first.kill.should be_true }
+    it { joe.injury_outcomes.for(decapitation).first.kill.should be_true }
+    it { joe.injury_outcomes.for(marker_poisoning).first.kill.should be_true }
+    it { joe.injury_outcomes.for(gut_wound).first.kill.should be_false }
   end
   context "if there are no injuries" do
     it "should do something"

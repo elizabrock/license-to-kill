@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe "Adding a person" do
   before do
-    person = Person.new("Jane")
+    person = Person.new(name: "Jane")
     person.save
   end
   context "adding a unique person" do
@@ -21,7 +21,7 @@ describe "Adding a person" do
   context "adding a duplicate person" do
     let(:output){ run_ltk_with_input("1", "Jane") }
     it "should print an error message" do
-      output.should include("Jane already exists.")
+      output.should include("'Jane' already exists.")
     end
     it "should ask them to try again" do
       menu_text = "Who do you want to add?"

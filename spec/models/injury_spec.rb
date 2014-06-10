@@ -1,39 +1,38 @@
 require_relative '../spec_helper'
 
 describe Injury do
-  context "editing an injury" do
-    let(:original_injury){ Injury.create("foo") }
-    let!(:original_id){ original_injury.id }
+  context "updating an injury" do
+    let(:original_injury){ Injury.new(name: "foo") }
     context "valid update" do
       before do
-        original_injury.name = "bar"
-        original_injury.save
+        original_injury.update(name: "bar")
       end
       let(:updated_injury){ Injury.find_by_name("bar") }
       it "updated injury should not be nil" do
         updated_injury.should_not be_nil
       end
       it "updated injury should retain previous id" do
-        updated_injury.id.should == original_id
+        Injury.last.id.should == original_injury.id
       end
       it "total number of Injurys should remain constant" do
         Injury.count.should == 1
       end
     end
     context "invalid update" do
-      let(:duplicate_injury){ Injury.create("bar") }
+      let(:duplicate_injury){ Injury.new(name: "bar") }
       before do
-        original_injury
-        duplicate_injury.name = "foo"
+        original_injury.save
         duplicate_injury.save
+        duplicate_injury.update(name: "foo")
       end
       it "should not allow duplicate injury change to existing name" do
-        duplicate_injury.save.should == false
+        duplicate_injury.valid? == false
       end
       it "should raise error" do
-        duplicate_injury.errors.first.should == "foo already exists."
+        duplicate_injury.valid?
+        duplicate_injury.errors[:name].first.should == "already exists."
       end
-      it "" do
+      it "maintain the number of total injuries" do
         Injury.count.should == 2
       end
     end
@@ -47,10 +46,10 @@ describe Injury do
       end
     end
     context "with multiple injuries in the database" do
-      let(:foo){ Injury.new("Foo") }
-      let(:bar){ Injury.new("Bar") }
-      let(:baz){ Injury.new("Baz") }
-      let(:grille){ Injury.new("Grille") }
+      let(:foo){ Injury.new(name: "Foo") }
+      let(:bar){ Injury.new(name: "Bar") }
+      let(:baz){ Injury.new(name: "Baz") }
+      let(:grille){ Injury.new(name: "Grille") }
       before do
         foo.save
         bar.save
@@ -75,10 +74,10 @@ describe Injury do
     end
     context "with multiple injuries in the database" do
       before do
-        Injury.new("Foo").save
-        Injury.new("Bar").save
-        Injury.new("Baz").save
-        Injury.new("Grille").save
+        Injury.new(name: "Foo").save
+        Injury.new(name: "Bar").save
+        Injury.new(name: "Baz").save
+        Injury.new(name: "Grille").save
       end
       it "should return the correct count" do
         Injury.count.should == 4
@@ -93,12 +92,12 @@ describe Injury do
       end
     end
     context "with injury by that name in the database" do
-      let(:foo){ Injury.new("Foo") }
+      let(:foo){ Injury.new(name: "Foo") }
       before do
         foo.save
-        Injury.new("Bar").save
-        Injury.new("Baz").save
-        Injury.new("Grille").save
+        Injury.new(name: "Bar").save
+        Injury.new(name: "Baz").save
+        Injury.new(name: "Grille").save
       end
       it "should return the injury with that name" do
         Injury.find_by_name("Foo").name.should == "Foo"
@@ -116,11 +115,11 @@ describe Injury do
       end
     end
     context "with multiple injuries in the database" do
-      let(:grille){ Injury.new("Grille") }
+      let(:grille){ Injury.new(name: "Grille") }
       before do
-        Injury.new("Foo").save
-        Injury.new("Bar").save
-        Injury.new("Baz").save
+        Injury.new(name: "Foo").save
+        Injury.new(name: "Bar").save
+        Injury.new(name: "Baz").save
         grille.save
       end
       it "should return the last one inserted" do
@@ -133,15 +132,15 @@ describe Injury do
   end
 
   context "#new" do
-    let(:injury){ Injury.new("impalement, 1/2 inch diameter or smaller") }
+    let(:injury){ Injury.new(name: "impalement, 1/2 inch diameter or smaller") }
     it "should store the name" do
       injury.name.should == "impalement, 1/2 inch diameter or smaller"
     end
   end
 
   context "#create" do
-    let(:result){ Environment.database_connection.execute("Select * from injuries") }
-    let(:injury){ Injury.create("foo") }
+    let(:result){ Injury.connection.execute("Select * from injuries") }
+    let(:injury){ Injury.create(name: "foo") }
     context "with a valid injury" do
       before do
         Injury.any_instance.stub(:valid?){ true }
@@ -169,8 +168,8 @@ describe Injury do
   end
 
   context "#save" do
-    let(:result){ Environment.database_connection.execute("Select * from injuries") }
-    let(:injury){ Injury.new("foo") }
+    let(:result){ Injury.connection.execute("Select * from injuries") }
+    let(:injury){ Injury.new(name: "foo") }
     context "with a valid injury" do
       before do
         injury.stub(:valid?){ true }
@@ -200,9 +199,9 @@ describe Injury do
   end
 
   context "#valid?" do
-    let(:result){ Environment.database_connection.execute("Select name from injuries") }
+    let(:result){ Injury.connection.execute("Select name from injuries") }
     context "after fixing the errors" do
-      let(:injury){ Injury.new("123") }
+      let(:injury){ Injury.new(name: "123") }
       it "should return true" do
         injury.valid?.should be_false
         injury.name = "Bob"
@@ -210,32 +209,32 @@ describe Injury do
       end
     end
     context "with a unique name" do
-      let(:injury){ Injury.new("impalement, 1/2 - 2 inches diameter") }
+      let(:injury){ Injury.new(name: "impalement, 1/2 - 2 inches diameter") }
       it "should return true" do
         injury.valid?.should be_true
       end
     end
     context "with a invalid name" do
-      let(:injury){ Injury.new("420") }
+      let(:injury){ Injury.new(name: "420") }
       it "should return false" do
         injury.valid?.should be_false
       end
       it "should save the error messages" do
         injury.valid?
-        injury.errors.first.should == "'420' is not a valid injury name, as it does not include any letters."
+        injury.errors[:name].first.should == "is not a valid injury name, as it does not include any letters."
       end
     end
     context "with a duplicate name" do
-      let(:injury){ Injury.new("impalement, 1/2 inch diameter or smaller") }
+      let(:injury){ Injury.new(name: "impalement, 1/2 inch diameter or smaller") }
       before do
-        Injury.new("impalement, 1/2 inch diameter or smaller").save
+        Injury.new(name: "impalement, 1/2 inch diameter or smaller").save
       end
       it "should return false" do
         injury.valid?.should be_false
       end
       it "should save the error messages" do
         injury.valid?
-        injury.errors.first.should == "impalement, 1/2 inch diameter or smaller already exists."
+        injury.errors[:name].first.should == "already exists."
       end
     end
   end
